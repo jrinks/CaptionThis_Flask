@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<h3>Login</h3>
+
+<form action="" method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        <fieldset>
+            {{ form.username.label }}
+            {{ form.username(class='form-control', placeholder='Username') }}
+        </fieldset>
+        <fieldset>
+            {{ form.password.label }}
+            {{ form.password(class='form-control', placeholder='Password') }}
+        </fieldset>
+        <fieldset>
+            {{ form.remember_me }}
+            {{ form.remember_me.label }}
+        </fieldset>
+        {{ form.submit(class='btn btn-primary') }}
+    </div>
+</form>
+
+{% endblock content %}

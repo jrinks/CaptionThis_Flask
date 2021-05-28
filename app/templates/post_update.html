@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3>Update Post: {{ post.title }}</h3>
+
+<form action="" method="POST">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        <fieldset>
+            {{ form.title.label }}
+            {{ form.title(class='form-control', value=post.title) }}
+        </fieldset>
+        <fieldset>
+            {{ form.body.label }}
+            {{ form.body(class='form-control', value=post.body) }}
+        </fieldset>
+        {{ form.submit(class='btn btn-success') }}
+    </div>
+</form>
+
+{% endblock content %}

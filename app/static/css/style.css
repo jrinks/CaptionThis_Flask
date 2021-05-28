@@ -1,0 +1,14 @@
+.banner{
+    background-image: linear-gradient(to right bottom, rgba(30,115,172,0.7), rgba(142,57,153, 0.6)),url(https://images.unsplash.com/photo-1571171637578-41bc2dd41cd2?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80);
+    background-size: cover;
+    height: 80vh;
+}
+
+.header-text{
+    display: flex;
+    justify-content: center;
+    padding-top: 20%;
+    left: 20rem;
+    top: 10rem;
+    color: white;
+}

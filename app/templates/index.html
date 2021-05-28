@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="banner">
+    <h1 class="header-text">Welcome to Coding Temple!!!!!</h1>
+</div>
+
+{% if current_user.is_authenticated %}
+    <h4>Hello, {{ current_user.username }}</h4>
+{% else %}
+    <h4>Please register to enjoy our app!</h4>
+{% endif %}
+
+
+    {% for post in posts %}
+    <div class="card mb-5">
+        <div class="card-body">
+          <h5 class="card-title">{{ post.title }}</h5>
+          <h6 class="card-subtitle mb-2 text-muted">{{ post.author.username }}</h6>
+          <p class="card-text">{{ post.body }}</p>
+        </div>
+      </div>
+    {% endfor %}
+
+
+{% endblock content %}

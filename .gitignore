@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+.vscode/
+.env
+app.db
+JR_Flask_API_notes.txt
+JR_React_notes.txt

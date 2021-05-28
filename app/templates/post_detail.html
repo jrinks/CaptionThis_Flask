@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Title: {{ post.title }}</h1>
+<h3>Written By: {{ post.author.username }}</h3>
+<hr>
+<p>{{ post.body }}</p>
+
+<blockquote>Date Created: {{ post.date_created }}</blockquote>
+
+<!-- Update Button -->
+<a href="{{ url_for('blog.post_update', post_id=post.id) }}"><button class="btn btn-primary">Update Post</button></a>
+
+
+<!-- Delete Button -->
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+    Delete Post
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Are You Sure?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this post? This action cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <form action="{{ url_for('blog.post_delete', post_id=post.id) }}" method="POST">
+            {{ form.hidden_tag() }}
+            {{ form.submit(class='btn btn-danger', value='Confirm Delete') }}
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
