@@ -7,6 +7,7 @@ from app.blueprints.auth.models import User
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    winner = db.relationship('Daily_Image', backref='winner', lazy='dynamic')
     post_body = db.Column(db.String(256))
     image_url = db.Column(db.String(256))
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -14,7 +15,7 @@ class Post(db.Model):
     votes = db.Column(db.Integer)
 
 
-    def __init__(self, post_body, image_url, date_created, votes = 0, user_id = None):
+    def __init__(self, post_body, image_url, date_created, user_id, votes = 0):
     #not sure if I need to pass votes in here or not    
         self.post_body = post_body
         self.user_id = user_id
@@ -22,9 +23,8 @@ class Post(db.Model):
         self.date_created = date_created
         self.votes = votes
         
-    #def __repr__(self):
-    #    return f'<Post | {self.title}>'
-    #Not sure if we need this __repr__ function
+    def __repr__(self):
+        return f'<Post | {self.id}>'
 
     def to_dict(self):
         return {
@@ -55,20 +55,15 @@ class Post(db.Model):
 class Daily_Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image_url = db.Column(db.String(256))
-    winner = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-    #should i remove "nullable=False from winnder?
+    winner = db.Column(db.Integer, db.ForeignKey('post.id'))
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
  
-    def __init__(self, id, image_url, date_created):
-    #do I need to pass winner even tho the image won't initially have anything in the winnder field?
-        self.id = id
+    def __init__(self, image_url):
         self.image_url = image_url
-        self.date_created = date_created
 
         
-    #def __repr__(self):
-    #    return f'<Post | {self.title}>'
-    #Not sure if we need this __repr__ function
+    def __repr__(self):
+        return f'<Daily_Image | {self.image_url}>'
 
     def to_dict(self):
         return {
@@ -79,6 +74,6 @@ class Daily_Image(db.Model):
         }
 
     def from_dict(self, data):
-        for field in ['image_url', 'date_created', 'winner']:
+        for field in ['image_url']:
             if field in data:
                 setattr(self, field, data[field])

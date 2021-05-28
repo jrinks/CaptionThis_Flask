@@ -12,20 +12,21 @@ def load_user(user_id):
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
+    posts = db.relationship('Post', backref='author', lazy='dynamic')
     username = db.Column(db.String(50), nullable=False, unique=True)
     email = db.Column(db.String(150), nullable=False, unique=True)
     password = db.Column(db.String(256), nullable=False)
-    #posts = db.relationship('Post', backref='author', lazy='dynamic')
-    #do we need posts in the User model ?
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration = db.Column(db.DateTime())
-    #should token be Index=True, that's how Brian did it but I don't know if we want/need it?
-    last_voted = db.Column(db.DateTime, default=datetime.utcnow)
+    last_voted = db.Column(db.DateTime)
 
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
         self.password = generate_password_hash(password)
+        #
+
+
 
 #everything past this point is stuff I grabbed from Brian's project and I have not changed anything
 

@@ -10,10 +10,11 @@ from .auth import token_auth, User
 4- update a post by post id (POST to post table)
 5- delete a single post (DELETE from post table)
 6- most recent 4 posts (GET 4 most recent posts from posts table)
-7- add vote (POST to post table)
-8- remove vote (POST to post table)
+7- add vote (POST to post table)  posts/vote/id
+#### nah   8- remove vote (POST to post table) 
 9- daily image add to table (POST from silly animal api to daily_imnage table)
-10- daily image get past winnerrs (GET all from dialy_image)
+10- pull daily image from daily image table
+10- daily image get past winners (GET all from dialy_image)
 11-get today's current winner (GET from post table)
 12- create user Register (POST to user table)
 13 login user (GET to user table)
@@ -89,3 +90,7 @@ def delete_post(id):
     return jsonify([p.to_dict() for p in Post.query.all()])
 
 #6
+
+
+
+#12
