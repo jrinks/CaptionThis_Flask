@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from . import bp as api
-from app.blueprints.post.models import Post, Daily_Image
+from app.blueprints.Post.models import Post, Daily_Image
 from .auth import token_auth, User
 
 '''All api endpoint routes go here: 
@@ -31,7 +31,7 @@ def get_todays_posts():
     [GET] /api/posts
     """
     posts = Post.query.all()
-    return jsonify([p.to_dict() for p in posts] #where posts.date_created is equal to today ])
+    return jsonify([p.to_dict() for p in posts]) #where posts.date_created is equal to today ])
 
 
 
