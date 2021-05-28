@@ -2,6 +2,7 @@ from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
 from app.blueprints.auth.models import User
 from werkzeug.security import check_password_hash
 
+####### I did not chnage anything on this page, this is from Brian's project.  
 
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth()

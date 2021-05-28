@@ -52,7 +52,7 @@ class Post(db.Model):
 
 #########Daily Image Model##############
 
-class Post(db.Model):
+class Daily_Image(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     image_url = db.Column(db.String(256))
     winner = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)

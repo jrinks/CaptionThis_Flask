@@ -1,6 +1,7 @@
 from app import db
 from datetime import datetime
 
+#### Id on't think we need this at all because our models are handled in augh and post folders
 
 class Product(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
