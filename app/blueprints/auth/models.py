@@ -13,8 +13,8 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     posts = db.relationship('Post', backref='author', lazy='dynamic')
-    username = db.Column(db.String(50), nullable=False, unique=True)
-    email = db.Column(db.String(150), nullable=False, unique=True)
+    username = db.Column(db.String(50), unique=True)
+    email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(256), nullable=False)
     token = db.Column(db.String(32), index=True, unique=True)
     token_expiration = db.Column(db.DateTime())
@@ -24,7 +24,27 @@ class User(db.Model, UserMixin):
         self.username = username
         self.email = email
         self.password = generate_password_hash(password)
-        #
+    
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'password': self.password,
+            'email': self.email
+        }
+
+    def from_dict(self, data):
+        for field in ['username', 'password', 'email']:
+            if field in data:
+                setattr(self, field, data[field])
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit() 
 
 
 
