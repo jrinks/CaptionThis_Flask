@@ -4,26 +4,41 @@ from app.blueprints.post.models import Post, Daily_Image
 from .auth import token_auth, User
 
 '''All api endpoint routes go here: 
-1- get all of today's posts (GET all from post table)
-2- get a single post by post id (GET based on post id from post table)
-3- create a post (POST to post table)
-4- update a post by post id (POST to post table)
-5- delete a single post (DELETE from post table)
-6- most recent 4 posts (GET 4 most recent posts from posts table)
-7- add vote (POST to post table)  posts/vote/id
-#### nah   8- remove vote (POST to post table) 
-9- daily image add to table (POST from silly animal api to daily_imnage table)
-10- pull daily image from daily image table
-10- daily image get past winners (GET all from dialy_image)
-11-get today's current winner (GET from post table)
-12- create user Register (POST to user table)
-13 login user (GET to user table)
+
+- Register (POST to user table)
+- login user (GET to user table)
+- get all of today's posts (GET all from post table)
+- get a single post by post id (GET based on post id from post table)
+- create a post (POST to post table)
+- update a post by post id (POST to post table)
+- delete a single post (DELETE from post table)
+- most recent 4 posts (GET 4 most recent posts from posts table)
+- add vote (POST to post table)  posts/vote/id
+- daily image add to table (POST from silly animal api to daily_imnage table)
+- pull daily image from daily image table
+- daily image get past winners (GET all from dialy_image)
+- get today's current winner (GET from post table)
+
 
 
 '''
 
 
-#1
+#1 Register New User
+@api.route('/register', methods=['POST'])
+def create_user():
+    """
+    [POST] /api/register
+    """
+    user = User()
+    data = request.get_json()
+    user.from_dict(data)
+    user.save()
+    return jsonify(user.to_dict())
+
+
+
+#
 @api.route('/posts', methods=['GET'])
 #do we want @toekn auth here?
 def get_todays_posts():
@@ -34,7 +49,7 @@ def get_todays_posts():
     return jsonify([p.to_dict() for p in posts]) #where posts.date_created is equal to today
 
 
-#2
+#
 @api.route('/posts/<int:id>', methods=['GET'])
 def get_single_post(id):
     """
@@ -45,7 +60,7 @@ def get_single_post(id):
 
 
 
-#3
+#
 @api.route('/posts', methods=['POST'])
 @token_auth.login_required
 def create_post():
@@ -60,7 +75,7 @@ def create_post():
     post.save()
     return jsonify(post.to_dict())
 
-#4
+#
 @api.route('/posts/<int:id>', methods=['PUT'])
 @token_auth.login_required
 def update_post(id):
@@ -78,7 +93,7 @@ def update_post(id):
     post.save()
     return jsonify(post.to_dict())
 
-#5
+#
 @api.route('/posts/<int:id>', methods=['DELETE'])
 def delete_post(id):
     """
@@ -88,8 +103,3 @@ def delete_post(id):
     post.delete()
     return jsonify([p.to_dict() for p in Post.query.all()])
 
-#6
-
-
-
-#12
