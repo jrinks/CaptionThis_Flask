@@ -16,7 +16,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(50), unique=True)
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(256), nullable=False)
-    token = db.Column(db.String(32), index=True, unique=True)
+    token = db.Column(db.String(32), index=True)
     token_expiration = db.Column(db.DateTime(), default=datetime.utcnow())
     last_voted = db.Column(db.DateTime, default=(datetime.utcnow() - timedelta(seconds=86401)))
 
