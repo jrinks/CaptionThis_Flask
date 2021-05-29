@@ -32,7 +32,8 @@ def create_user():
     """
     user = User()
     data = request.get_json()
-    user.from_dict(data)
+    print(data)
+    user.from_dict(data[0])
     user.save()
     return jsonify(user.to_dict())
 

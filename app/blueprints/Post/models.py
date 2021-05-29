@@ -7,7 +7,7 @@ from app.blueprints.auth.models import User
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    winner = db.relationship('Daily_Image', backref='winner', lazy='dynamic')
+    winner = db.relationship('Daily_Image', backref='winners', lazy='dynamic')
     post_body = db.Column(db.String(256))
     image_url = db.Column(db.String(256))
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
