@@ -31,8 +31,7 @@ def get_todays_posts():
     [GET] /api/posts
     """
     posts = Post.query.all()
-    return jsonify([p.to_dict() for p in posts] #where posts.date_created is equal to today ])
-
+    return jsonify([p.to_dict() for p in posts]) #where posts.date_created is equal to today
 
 
 #2
