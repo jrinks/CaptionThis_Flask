@@ -31,12 +31,10 @@ def create_app(config_class=Config):
         from app.blueprints.auth import bp as auth
         app.register_blueprint(auth)
 
-        from app.blueprints.blog import bp as blog
-        app.register_blueprint(blog)
+        from app.blueprints.post import bp as post
+        app.register_blueprint(post)
 
-        from app.blueprints.main import bp as main
-        app.register_blueprint(main)
-
+       
         from app.blueprints.api import bp as api
         app.register_blueprint(api)
 
