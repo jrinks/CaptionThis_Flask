@@ -17,13 +17,14 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(150), unique=True)
     password = db.Column(db.String(256), nullable=False)
     token = db.Column(db.String(32), index=True, unique=True)
-    token_expiration = db.Column(db.DateTime())
-    last_voted = db.Column(db.DateTime)
+    token_expiration = db.Column(db.DateTime(), default=datetime.utcnow())
+    last_voted = db.Column(db.DateTime, default=(datetime.utcnow() - timedelta(seconds=86401)))
 
-    def __init__(self, username, email, password):
-        self.username = username
-        self.email = email
-        self.password = generate_password_hash(password)
+    def __init__(self):
+        self.username = ""
+        self.email = ""
+        self.password = ""
+        self.token = ""
     
     def to_dict(self):
         return {

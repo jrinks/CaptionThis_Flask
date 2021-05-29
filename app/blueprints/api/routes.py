@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from . import bp as api
-from app.blueprints.Post.models import Post, Daily_Image
+from app.blueprints.post.models import Post, Daily_Image
 from .auth import token_auth, User
 
 '''All api endpoint routes go here: 
@@ -32,7 +32,8 @@ def create_user():
     """
     user = User()
     data = request.get_json()
-    user.from_dict(data)
+    print(data)
+    user.from_dict(data[0])
     user.save()
     return jsonify(user.to_dict())
 
