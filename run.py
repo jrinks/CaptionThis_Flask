@@ -1,7 +1,7 @@
 from app import create_app, db
-from app.blueprints.auth.models import User
-from app.blueprints.post.models import Post
-from app.blueprints.post.models import Daily_Image
+from app.blueprints.api.models import User
+from app.blueprints.api.models import Post
+from app.blueprints.api.models import Daily_Image
 
 
 app = create_app()
