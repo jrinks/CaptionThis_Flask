@@ -12,23 +12,25 @@ from sqlalchemy import desc
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth()
 
+
 '''All api endpoint routes go here: 
 
-1 Register (POST to user table)
+1 create user (POST to user table)
 2 login user (GET to user table)
 3 Basic Auth
 4 Token Auth
 5 create a post (POST to post table)
-6 get all of today's posts (GET all from post table)
-7 get a single post by post id (GET based on post id from post table)
-8 update a post by post id (POST to post table)
-9 delete a single post (DELETE from post table)
+6 get a single post by post id (GET based on post id from post table)
+7 edit a post by post id (POST to post table)
+8 delete a single post (DELETE from post table)
+9 get all of today's posts (GET all from post table)
 10 most recent 4 posts (GET 4 most recent posts from posts table)
+11 get today's current winner (GET from post table)
+#12 post daily image to table
+#13 get current daily image from table
+still need to write: 
 - add vote (POST to post table)  posts/vote/id
-- daily image add to table (POST from silly animal api to daily_imnage table)
-- pull daily image from daily image table
 - daily image get past winners (GET all from dialy_image)
-- get today's current winner (GET from post table)
 
 
 
@@ -88,17 +90,34 @@ def create_post():
     return jsonify(post.to_dict())
 
 
-#6 Get all of today's posts
-@api.route('/today', methods=['GET']) 
-def get_todays_posts():
+#6 Get single post by post ID
+@api.route('/post/<int:id>', methods=['GET']) 
+@token_auth.verify_token
+def get_single_post(id):
     """
-    [GET] /api/today
+    [GET] /api/post/<int:id>
     """
-    todays_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
-    todays_posts = Post.query.filter(Post.date_created >= todays_datetime).all()
-    return jsonify([p.to_dict() for p in todays_posts])
+    post = Post.query.get(id)
+    return jsonify(post.to_dict())
 
-#7
+
+#7 edit an existing post by post id (POST to post table)
+@api.route('/edit/<int:id>', methods=['GET']) 
+@token_auth.login_required
+def edit_single_post(id):
+    """
+    [GET] /api/edit/<int:id>
+    """
+    post = Post.query.get(id)
+    user = token_auth.current_user()
+    if post.user_id != user.id:
+        return jsonify({'Error': 'You do not have access to update this post'}, 401)
+    data = request.get_json()
+    post.from_dict(data)
+    post.save()
+    return jsonify(post.to_dict())
+
+#8
 @api.route('/posts/<int:id>', methods=['DELETE'])
 @token_auth.login_required
 def delete_post(id):
@@ -109,7 +128,21 @@ def delete_post(id):
     post.delete()
     return jsonify([p.to_dict() for p in Post.query.all()])
 
-#8 most recent 4 posts (GET 4 most recent posts from posts table)
+
+
+#9 Get all of today's posts
+@api.route('/today', methods=['GET']) 
+def get_todays_posts():
+    """
+    [GET] /api/today
+    """
+    todays_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+    todays_posts = Post.query.filter(Post.date_created >= todays_datetime).all()
+    return jsonify([p.to_dict() for p in todays_posts])
+
+
+
+#10 most recent 4 posts (GET 4 most recent posts from posts table)
 @api.route('/recent', methods=['GET']) 
 def recent_posts():
     """
@@ -119,7 +152,7 @@ def recent_posts():
     recent = Post.query.filter(Post.date_created >= todays_datetime).order_by(desc('date_created')).limit(4)
     return jsonify([p.to_dict() for p in recent])
 
-#9 get today's current winnder
+#11 get today's current winner
 @api.route('/winner', methods=['GET']) 
 def show_winner():
     """
@@ -128,6 +161,7 @@ def show_winner():
     recent = Post.query.order_by(desc('votes')).first()
     return jsonify(recent.to_dict())
 
+#12 post daily image to table
 @api.route('/dailyimage', methods=['POST'])
 def set_image():
     image = Daily_Image()
@@ -136,77 +170,10 @@ def set_image():
     image.save()
     return jsonify(image.to_dict())
 
+#13 query daily_image
 @api.route('/getdailyimage', methods=['GET'])
 def get_image():
     image = Daily_Image.query.order_by(desc('date_created')).first()
     return jsonify(image.to_dict())
-
-
-
-
-# @api.route('/tokens', methods=['POST'])
-# @basic_auth.login_required
-# def get_token():
-#     token = basic_auth.current_user().get_token()
-#     db.session.commit()
-#     return jsonify({ 'token': token })
-
-# #
-# @api.route('/posts', methods=['GET'])
-# #do we want @toekn auth here?
-# def get_todays_posts():
-#     """
-#     [GET] /api/posts
-#     """
-#     posts = Post.query.all()
-#     return jsonify([p.to_dict() for p in posts]) #where posts.date_created is equal to today
-
-
-# #
-# @api.route('/posts/<int:id>', methods=['GET'])
-# def get_single_post(id):
-#     """
-#     [GET] /api/posts
-#     """
-#     post = Post.query.get(id)
-#     return jsonify(post.to_dict())
-
-
-
-# #
-# @api.route('/posts', methods=['POST'])
-# @token_auth.login_required
-# def create_post():
-#     """
-#     [POST] /api/posts
-#     """
-#     post = Post()
-#     user = token_auth.current_user()
-#     data = request.get_json()
-#     data['user_id'] = user.id
-#     post.from_dict(data)
-#     post.save()
-#     return jsonify(post.to_dict())
-
-# #
-# @api.route('/posts/<int:id>', methods=['PUT'])
-# @token_auth.login_required
-# def update_post(id):
-#     """
-#     [PUT] /api/posts/<id>
-#     """
-#     post = Post.query.get(id)
-#     user = token_auth.current_user()
-#     print(user)
-#     if post.user_id != user.id:
-#         print("here")
-#         return jsonify({'Error': 'You do not have access to update this post'}, 401)
-#     data = request.get_json()
-#     post.from_dict(data)
-#     post.save()
-#     return jsonify(post.to_dict())
-
-
-
 
 
