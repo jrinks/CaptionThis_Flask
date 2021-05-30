@@ -89,19 +89,24 @@ def create_post():
     return jsonify(post.to_dict())
 
 
-#6 Get single post by post ID
-@api.route('/post/<int:id>', methods=['GET']) 
-@token_auth.verify_token
-def get_single_post(id):
-    """
-    [GET] /api/post/<int:id>
-    """
-    post = Post.query.get(id)
-    return jsonify(post.to_dict())
+# okay, so I could not tell you why, but the below function was preventing 
+# us from being able to create a post. it was trying to run line 104
+# with the params from the create_post function. commented for now
+
+
+# #6 Get single post by post ID
+# @api.route('/post/<int:id>', methods=['GET']) 
+# @token_auth.verify_token
+# def get_single_post(id):
+#     """
+#     [GET] /api/post/<int:id>
+#     """
+#     post = Post.query.get(id)
+#     return jsonify(post.to_dict())
 
 
 #7 edit an existing post by post id (POST to post table)
-@api.route('/edit/<int:id>', methods=['GET']) 
+@api.route('/edit/<int:id>', methods=['POST']) 
 @token_auth.login_required
 def edit_single_post(id):
     """
@@ -127,8 +132,6 @@ def delete_post(id):
     post.delete()
     return jsonify([p.to_dict() for p in Post.query.all()])
 
-
-
 #9 Get all of today's posts
 @api.route('/today', methods=['GET']) 
 def get_todays_posts():
@@ -138,8 +141,6 @@ def get_todays_posts():
     todays_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
     todays_posts = Post.query.filter(Post.date_created >= todays_datetime).all()
     return jsonify([p.to_dict() for p in todays_posts])
-
-
 
 #10 most recent 4 posts (GET 4 most recent posts from posts table)
 @api.route('/recent', methods=['GET']) 
@@ -163,6 +164,10 @@ def show_winner():
 #12 post daily image to table
 @api.route('/dailyimage', methods=['POST'])
 def set_image():
+    outgoing_image = Daily_Image.query.order_by(desc('date_created')).first()
+    outgoing_image.find_winner()
+    db.session.add(outgoing_image)
+    db.session.commit()
     image = Daily_Image()
     data = request.get_json()
     image.from_dict(data)
