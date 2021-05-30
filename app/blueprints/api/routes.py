@@ -28,10 +28,9 @@ token_auth = HTTPTokenAuth()
 11 get today's current winner (GET from post table)
 #12 post daily image to table
 #13 get current daily image from table
-still need to write: 
-- add vote (POST to post table)  posts/vote/id
-- daily image get past winners (GET all from dialy_image)
-
+#14 cast a vote for a post
+#15 retrive number of votes for a post
+#16 get all past winners and images
 
 
 '''
@@ -177,3 +176,37 @@ def get_image():
     return jsonify(image.to_dict())
 
 
+#14 cast a vote
+@api.route('/vote/<int:id>', methods=['POST']) 
+@token_auth.login_required
+def add_a_vote(id):
+    """
+    [GET] /api/castvote/<int:id>
+    """
+    post = Post.query.get(id)
+    user = token_auth.current_user()
+    data = request.get_json()
+    post.from_dict(data)
+    data['votes'] = data['votes'] + 1
+    post.save()
+    return jsonify(post.to_dict())
+
+#15 retrive number of votes for a post
+@api.route('/getvote/<int:id>', methods=['GET']) 
+@token_auth.login_required
+def get_votes(id):
+    """
+    [GET] /api/getvote/<int:id>
+    """
+    post = Post.query.get(id)
+    user = token_auth.current_user()
+    data = request.get_json()
+    post.from_dict(data)
+    votes = data['votes']
+    return jsonify(votes)
+
+#16 query all winners and daily_images
+@api.route('/getallwinners', methods=['GET'])
+def get_allwinners():
+    winners = Daily_Image.query.order_by(desc('date_created'))
+    return jsonify([w.to_dict() for w in winners])
