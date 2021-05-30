@@ -19,11 +19,10 @@ token_auth = HTTPTokenAuth()
 4 Token Auth
 5 create a post (POST to post table)
 6 get all of today's posts (GET all from post table)
-- get a single post by post id (GET based on post id from post table)
-
-- update a post by post id (POST to post table)
-- delete a single post (DELETE from post table)
-- most recent 4 posts (GET 4 most recent posts from posts table)
+7 get a single post by post id (GET based on post id from post table)
+8 update a post by post id (POST to post table)
+9 delete a single post (DELETE from post table)
+10 most recent 4 posts (GET 4 most recent posts from posts table)
 - add vote (POST to post table)  posts/vote/id
 - daily image add to table (POST from silly animal api to daily_imnage table)
 - pull daily image from daily image table
@@ -88,7 +87,7 @@ def create_post():
     return jsonify(post.to_dict())
 
 
-#6
+#6 Get all of today's posts
 @api.route('/today', methods=['GET']) 
 @token_auth.login_required
 def get_todays_posts():
@@ -108,6 +107,25 @@ def delete_post(id):
     post = Post.query.get(id)
     post.delete()
     return jsonify([p.to_dict() for p in Post.query.all()])
+
+#8 most recent 4 posts (GET 4 most recent posts from posts table)
+@api.route('/recent', methods=['GET']) 
+def recent_posts():
+    """
+    [GET] /api/recent
+    """
+    recent = Post.query.order_by('date_created').limit(4)
+    return jsonify([p.to_dict() for p in recent])
+
+#9 get today's current winnder
+@api.route('/winner', methods=['GET']) 
+def show_winner():
+    """
+    [GET] /api/winnder
+    """
+    recent = Post.query.order_by('votes').limit(1)
+    return jsonify([p.to_dict() for p in recent])
+
 
 
 
