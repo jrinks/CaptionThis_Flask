@@ -131,8 +131,8 @@ class Daily_Image(db.Model):
     winner = db.Column(db.Integer, db.ForeignKey('post.id'))
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
  
-    def __init__(self, image_url):
-        self.image_url = image_url
+    def __init__(self):
+        self.image_url = ""
 
         
     def __repr__(self):
@@ -150,3 +150,7 @@ class Daily_Image(db.Model):
         for field in ['image_url']:
             if field in data:
                 setattr(self, field, data[field])
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()

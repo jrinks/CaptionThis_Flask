@@ -7,6 +7,7 @@ from app import db
 from . import bp as api
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth
+from sqlalchemy import desc
 
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth()
@@ -89,7 +90,6 @@ def create_post():
 
 #6 Get all of today's posts
 @api.route('/today', methods=['GET']) 
-@token_auth.login_required
 def get_todays_posts():
     """
     [GET] /api/today
@@ -100,6 +100,7 @@ def get_todays_posts():
 
 #7
 @api.route('/posts/<int:id>', methods=['DELETE'])
+@token_auth.login_required
 def delete_post(id):
     """
     [DELETE] /api/posts/<id>
@@ -114,7 +115,8 @@ def recent_posts():
     """
     [GET] /api/recent
     """
-    recent = Post.query.order_by('date_created').limit(4)
+    todays_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+    recent = Post.query.filter(Post.date_created >= todays_datetime).order_by(desc('date_created')).limit(4)
     return jsonify([p.to_dict() for p in recent])
 
 #9 get today's current winnder
@@ -123,8 +125,21 @@ def show_winner():
     """
     [GET] /api/winnder
     """
-    recent = Post.query.order_by('votes').limit(1)
-    return jsonify([p.to_dict() for p in recent])
+    recent = Post.query.order_by(desc('votes')).first()
+    return jsonify(recent.to_dict())
+
+@api.route('/dailyimage', methods=['POST'])
+def set_image():
+    image = Daily_Image()
+    data = request.get_json()
+    image.from_dict(data)
+    image.save()
+    return jsonify(image.to_dict())
+
+@api.route('/getdailyimage', methods=['GET'])
+def get_image():
+    image = Daily_Image.query.order_by(desc('date_created')).first()
+    return jsonify(image.to_dict())
 
 
 
