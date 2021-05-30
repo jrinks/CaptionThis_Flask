@@ -98,13 +98,15 @@ class Post(db.Model):
         return f'<Post | {self.id}>'
 
     def to_dict(self):
+        username = User.query.filter_by(id=self.user_id).first().username
         return {
             'id': self.id,
             'post_body': self.post_body,
             'image_url': self.image_url,
             'date_created': self.date_created,
             'user_id': self.user_id,
-            'votes': self.votes
+            'votes': self.votes,
+            'username': username
         }
 
     def from_dict(self, data):

@@ -73,33 +73,41 @@ def verify_token(token):
 
 #5
 @api.route('/post', methods=['POST']) 
-@token_auth.verify_token
+@token_auth.login_required
 def create_post():
     """
     [POST] /api/post
     """
     post = Post()
+    user = token_auth.current_user()
     data = request.get_json()
-    print("post data received")
+    data['user_id'] = user.id
+    data['votes'] = 0
     post.from_dict(data)
-    post.votes = 0
-    #post.user_id = current_user[user_id]
     post.save()
     return jsonify(post.to_dict())
 
 
 #6
 @api.route('/today', methods=['GET']) 
-@token_auth.verify_token
+@token_auth.login_required
 def get_todays_posts():
     """
     [GET] /api/today
     """
-    print("todays posts go here")
     todays_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
     todays_posts = Post.query.filter(Post.date_created >= todays_datetime).all()
     return jsonify([p.to_dict() for p in todays_posts])
 
+#7
+@api.route('/posts/<int:id>', methods=['DELETE'])
+def delete_post(id):
+    """
+    [DELETE] /api/posts/<id>
+    """
+    post = Post.query.get(id)
+    post.delete()
+    return jsonify([p.to_dict() for p in Post.query.all()])
 
 
 
@@ -165,15 +173,6 @@ def get_todays_posts():
 #     post.save()
 #     return jsonify(post.to_dict())
 
-# #
-# @api.route('/posts/<int:id>', methods=['DELETE'])
-# def delete_post(id):
-#     """
-#     [DELETE] /api/posts/<id>
-#     """
-#     post = Post.query.get(id)
-#     post.delete()
-#     return jsonify([p.to_dict() for p in Post.query.all()])
 
 
 
