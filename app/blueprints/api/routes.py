@@ -1,4 +1,7 @@
+from datetime import datetime
+from sqlite3 import Timestamp
 from flask import request, jsonify
+from flask_login import current_user
 from app.blueprints.api.models import Post, User, UserMixin, Daily_Image
 from app import db
 from . import bp as api
@@ -10,11 +13,14 @@ token_auth = HTTPTokenAuth()
 
 '''All api endpoint routes go here: 
 
-- Register (POST to user table)
-- login user (GET to user table)
-- get all of today's posts (GET all from post table)
+1 Register (POST to user table)
+2 login user (GET to user table)
+3 Basic Auth
+4 Token Auth
+5 create a post (POST to post table)
+6 get all of today's posts (GET all from post table)
 - get a single post by post id (GET based on post id from post table)
-- create a post (POST to post table)
+
 - update a post by post id (POST to post table)
 - delete a single post (DELETE from post table)
 - most recent 4 posts (GET 4 most recent posts from posts table)
@@ -51,18 +57,52 @@ def get_token():
     db.session.commit()
     return jsonify({ 'token': token })
 
+#3
 @basic_auth.verify_password
 def verify_password(username, password):
     u = User.query.filter_by(username=username).first()
     if u and check_password_hash(u.password, password):
         return u
 
+#4
 @token_auth.verify_token
 def verify_token(token):
     if token:
         return User.check_token(token)
     return None
-    
+
+#5
+@api.route('/post', methods=['POST']) 
+@token_auth.verify_token
+def create_post():
+    """
+    [POST] /api/post
+    """
+    post = Post()
+    data = request.get_json()
+    print("post data received")
+    post.from_dict(data)
+    post.votes = 0
+    #post.user_id = current_user[user_id]
+    post.save()
+    return jsonify(post.to_dict())
+
+
+#6
+@api.route('/today', methods=['GET']) 
+@token_auth.verify_token
+def get_todays_posts():
+    """
+    [GET] /api/today
+    """
+    print("todays posts go here")
+    todays_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+    todays_posts = Post.query.filter(Post.date_created >= todays_datetime).all()
+    return jsonify([p.to_dict() for p in todays_posts])
+
+
+
+
 # @api.route('/tokens', methods=['POST'])
 # @basic_auth.login_required
 # def get_token():
