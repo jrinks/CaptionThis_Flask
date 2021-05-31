@@ -2,6 +2,7 @@ from app import db, login
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash
 from datetime import datetime, timedelta
+from sqlalchemy import desc
 import os
 import base64
 
@@ -139,11 +140,19 @@ class Daily_Image(db.Model):
         return f'<Daily_Image | {self.image_url}>'
 
     def to_dict(self):
+        winner_username = ""
+        post_body = ""
+        if Post.query.filter_by(id=self.winner).first():
+            post_body = Post.query.filter_by(id=self.winner).first().post_body
+        if Post.query.filter_by(id=self.winner).first():
+            winner_username = Post.query.filter_by(id=self.winner).first().author.username
         return {
             'id': self.id,
             'image_url': self.image_url,
             'date_created': self.date_created,
-            'winner': self.winner
+            'winner': self.winner,
+            'winner_username': winner_username,
+            'post_body': post_body
         }
 
     def from_dict(self, data):
@@ -154,3 +163,7 @@ class Daily_Image(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+
+    def find_winner(self):
+        winner = Post.query.order_by(desc('votes')).first()
+        self.winner = winner.id
