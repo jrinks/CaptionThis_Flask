@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from sqlite3 import Timestamp
 from flask import request, jsonify
 from flask_login import current_user
@@ -190,25 +190,22 @@ def add_a_vote(id):
     """
     post = Post.query.get(id)
     user = token_auth.current_user()
-    data = request.get_json()
-    post.from_dict(data)
-    data['votes'] = data['votes'] + 1
-    post.save()
+    now = datetime.utcnow()
+    if user.last_voted < now - timedelta(seconds=86400):
+        user.last_voted = datetime.utcnow()
+        post.votes += 1
+        user.save()
+        post.save()
     return jsonify(post.to_dict())
 
 #15 retrive number of votes for a post
 @api.route('/getvote/<int:id>', methods=['GET']) 
-@token_auth.login_required
 def get_votes(id):
     """
     [GET] /api/getvote/<int:id>
     """
     post = Post.query.get(id)
-    user = token_auth.current_user()
-    data = request.get_json()
-    post.from_dict(data)
-    votes = data['votes']
-    return jsonify(votes)
+    return jsonify(post.to_dict())
 
 #16 query all winners and daily_images
 @api.route('/getallwinners', methods=['GET'])
