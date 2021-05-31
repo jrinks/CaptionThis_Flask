@@ -177,9 +177,13 @@ def set_image():
 #13 query daily_image
 @api.route('/getdailyimage', methods=['GET'])
 def get_image():
-    image = Daily_Image.query.order_by(desc('date_created')).first()
-    return jsonify(image.to_dict())
-
+    # image = Daily_Image.query.order_by(desc('date_created')).first()
+    # return jsonify(image.to_dict())
+    todays_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+    todays_image = Daily_Image.query.filter(Daily_Image.date_created >= todays_datetime).first()
+    if todays_image is None:
+        return jsonify({'image_url': 'None'})
+    return jsonify(todays_image.to_dict())
 
 #14 cast a vote
 @api.route('/vote/<int:id>', methods=['POST']) 
