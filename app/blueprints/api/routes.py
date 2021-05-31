@@ -177,9 +177,11 @@ def set_image():
 #13 query daily_image
 @api.route('/getdailyimage', methods=['GET'])
 def get_image():
-    image = Daily_Image.query.order_by(desc('date_created')).first()
-    return jsonify(image.to_dict())
-
+    todays_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+    todays_image = Daily_Image.query.filter(Daily_Image.date_created >= todays_datetime).first()
+    if todays_image is None:
+        return jsonify({'image_url': 'None'})
+    return jsonify(todays_image.to_dict())
 
 #14 cast a vote
 @api.route('/vote/<int:id>', methods=['POST']) 
@@ -190,8 +192,8 @@ def add_a_vote(id):
     """
     post = Post.query.get(id)
     user = token_auth.current_user()
-    now = datetime.utcnow()
-    if user.last_voted < now - timedelta(seconds=86400):
+    todays_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+    if user.last_voted <= todays_datetime:
         user.last_voted = datetime.utcnow()
         post.votes += 1
         user.save()
@@ -210,5 +212,5 @@ def get_votes(id):
 #16 query all winners and daily_images
 @api.route('/getallwinners', methods=['GET'])
 def get_allwinners():
-    winners = Daily_Image.query.order_by(desc('date_created'))
+    winners = Daily_Image.query.filter(Daily_Image.winner != None).order_by(desc('date_created'))
     return jsonify([w.to_dict() for w in winners])
