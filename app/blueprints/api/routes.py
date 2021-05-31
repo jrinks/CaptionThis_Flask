@@ -139,7 +139,7 @@ def get_todays_posts():
     [GET] /api/today
     """
     todays_datetime = datetime(datetime.today().year, datetime.today().month, datetime.today().day)
-    todays_posts = Post.query.filter(Post.date_created >= todays_datetime).all()
+    todays_posts = Post.query.filter(Post.date_created >= todays_datetime).order_by(desc('votes')).all()
     return jsonify([p.to_dict() for p in todays_posts])
 
 #10 most recent 4 posts (GET 4 most recent posts from posts table)
@@ -198,6 +198,8 @@ def add_a_vote(id):
         post.votes += 1
         user.save()
         post.save()
+    else:
+        return jsonify({"Response": "You have already voted today"})
     return jsonify(post.to_dict())
 
 #15 retrive number of votes for a post
