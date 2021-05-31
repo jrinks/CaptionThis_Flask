@@ -44,7 +44,6 @@ def create_user():
     """
     user = User()
     data = request.get_json()
-    print(data)
     user.from_dict(data[0])
     user.password = generate_password_hash(user.password)
     user.save()
@@ -88,21 +87,15 @@ def create_post():
     post.save()
     return jsonify(post.to_dict())
 
-
-# okay, so I could not tell you why, but the below function was preventing 
-# us from being able to create a post. it was trying to run line 104
-# with the params from the create_post function. commented for now
-
-
-# #6 Get single post by post ID
-# @api.route('/post/<int:id>', methods=['GET']) 
-# @token_auth.verify_token
-# def get_single_post(id):
-#     """
-#     [GET] /api/post/<int:id>
-#     """
-#     post = Post.query.get(id)
-#     return jsonify(post.to_dict())
+#6 Get single post by post ID
+@api.route('/post/<int:id>', methods=['GET']) 
+@token_auth.login_required
+def get_single_post(id):
+    """
+    [GET] /api/post/<int:id>
+    """
+    post = Post.query.get(id)
+    return jsonify(post.to_dict())
 
 
 #7 edit an existing post by post id (POST to post table)
@@ -216,3 +209,18 @@ def get_votes(id):
 def get_allwinners():
     winners = Daily_Image.query.filter(Daily_Image.winner != None).order_by(desc('date_created'))
     return jsonify([w.to_dict() for w in winners])
+
+@api.route('/viewprofile')
+@token_auth.login_required
+def get_profile():
+    user = token_auth.current_user()
+    return jsonify(user.to_dict())
+
+@api.route('/updateprofile', methods=['PUT'])
+@token_auth.login_required
+def update_profile():
+    user = token_auth.current_user()
+    data = request.get_json()
+    user.from_dict(data[0])
+    user.save()
+    return jsonify(user.to_dict())
